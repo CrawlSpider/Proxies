@@ -106,9 +106,6 @@ class ProxiesDownloaderMiddleware(object):
 
 #
 #
-# ???????????????????????
-# ?????????????
-# ????????????????
 from twisted.internet import defer
 from twisted.web.client import ResponseFailed
 from twisted.internet.error import TimeoutError, DNSLookupError,\
@@ -122,12 +119,10 @@ class ProcessAllExceptionMiddleware(object):
         ConnectionLost, TCPTimedOutError, ResponseFailed,
         IOError, TunnelError)
     def process_exception(self,request,exception,spider):
-        # ?????????
+        
         if isinstance(exception, self.ALL_EXCEPTIONS):
-            # ??????????
             spider.logger.error('Got Exception: {}'.format(exception))
-            # ??????response????spider
+            
             response = HtmlResponse(url='exception')
             return response
-        #??????????
         spider.logger.error('Not contained exception: {}'.format(exception))
