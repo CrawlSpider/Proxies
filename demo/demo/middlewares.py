@@ -196,3 +196,20 @@ class ProcessAllExceptionMiddleware(object):
             response = HtmlResponse(url='exception')
             return response
         spider.logger.error('Not contained exception: {}'.format(exception))
+
+#
+#
+#
+from fake_useragent import UserAgent
+class RandomUserAgentMiddlware(object):
+    # random user-agent
+    def __init__(self,crawler):
+        super(RandomUserAgentMiddlware,self).__init__()
+        self.ua = UserAgent()
+
+    @classmethod
+    def from_crawler(cls,crawler):
+        return cls(crawler)
+
+    def process_request(self,request,spider):
+        request.headers.setdefault('User-Agent', self.ua.random)

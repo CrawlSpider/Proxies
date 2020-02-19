@@ -16,7 +16,7 @@ class TestSpider(CrawlSpider):
     )
 
     def parse_start_url(self, response):
-        for _ in range(10):
+        for _ in range(2):
             yield scrapy.Request('http://httpbin.org/ip', dont_filter = True, callback=self.parse_proxy)
             yield scrapy.Request('https://httpbin.org/ip', dont_filter = True, callback=self.parse_proxy)
 

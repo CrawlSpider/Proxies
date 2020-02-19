@@ -3,9 +3,14 @@
 
 - 学习给爬虫使用代理
 - 学习使用多代理
+- 学习自动生成 User-Agent 并使用
 
 ### 运行
 - scrapy crawl test
+    通过访问 httpbin.org/ip 来演示如何使用动态多代理（中间件）
+- scrapy crawl mtest   或    scrapy crawl mtest -o check.json
+    读取代理列表文件，遍历代理并通过临时添加代理方式 访问 httpbin.org/ip
+    本例程更大的用处是手动重复校验代理，以便及时发现已经失效的代理
 
 ### 说明
 scrapy 中使用代理的方法归纳来说有三种：
@@ -27,7 +32,8 @@ scrapy 中使用代理的方法归纳来说有三种：
         meta = meta,
         dont_filter = True)
 ```
-请参考我的另一个 [代理爬取和验证](https://github.com/CrawlSpider/Proxies/blob/11fe655a9c96948968aab225d8e5d1dd648e8fbf/proxy/proxies/proxies/spiders/xcip.py#L54) 的学习代码片段
+请参考我的另一个 [代理爬取和验证](https://github.com/CrawlSpider/Proxies/blob/11fe655a9c96948968aab225d8e5d1dd648e8fbf/proxy/proxies/proxies/spiders/xcip.py#L54) 的学习代码片段   
+`注：这种方式通常需要关闭 中间件 方式的代理功能，否则会引发冲突导致奇怪现象`
 
 #### 3. 在 middlewares.py 文件中增加中间件
 - 这种方式最为方便，一劳永逸
@@ -109,7 +115,29 @@ DOWNLOADER_MIDDLEWARES = {
     'demo.middlewares.RandomHttpProxyMiddleware': 745,
 }
 ```
-### 4 遗留问题
+### 4 自动生成  User-Agent
+```python
+from fake_useragent import UserAgent
+class RandomUserAgentMiddlware(object):
+    # random user-agent
+    def __init__(self,crawler):
+        super(RandomUserAgentMiddlware,self).__init__()
+        self.ua = UserAgent()
+
+    @classmethod
+    def from_crawler(cls,crawler):
+        return cls(crawler)
+
+    def process_request(self,request,spider):
+        request.headers.setdefault('User-Agent', self.ua.random)
+```
+最后别忘了
+```python
+    'demo.middlewares.RandomUserAgentMiddlware': 495
+```
+访问 http://httpbin.org/get 验证生效
+### 5 遗留问题
 1. 代理失效时如何自动重试 或者 更换代理再重试
 1. 如何选择可靠的代理
 1. 使用免费代理时，各种异常会比较多，面对每种异常如何针对性的可靠优雅的处理 以及 策略
+1. 中间件方式的代理使用方式 和 直接在 spider 里临时设置的代理方式，两种方式似乎不可同时启用
