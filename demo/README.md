@@ -6,9 +6,9 @@
 - 学习自动生成 User-Agent 并使用
 
 ### 运行
-- scrapy crawl test
+- scrapy crawl test    
     通过访问 httpbin.org/ip 来演示如何使用动态多代理（中间件）
-- scrapy crawl mtest   或    scrapy crawl mtest -o check.json
+- scrapy crawl mtest   或    scrapy crawl mtest -o check.json     
     读取代理列表文件，遍历代理并通过临时添加代理方式 访问 httpbin.org/ip
     本例程更大的用处是手动重复校验代理，以便及时发现已经失效的代理
 
